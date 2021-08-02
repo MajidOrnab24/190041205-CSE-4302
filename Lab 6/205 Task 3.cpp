@@ -19,7 +19,7 @@ public:
     }
     float getDistance(Coordinate c)
     {
-        return sqrt(pow(abcissa - c.abcissa, 2) + pow(ordinate - c.ordinate, 2) * 1.0);
+        return sqrt(pow(abcissa-c.abcissa,2)+pow(ordinate-c.ordinate,2)*1.0);
     }
     float getDistance()
     {

@@ -43,11 +43,12 @@ public:
     {
         count=0;
     }
-    Counter operator + (Counter c)
+    Counter operator +(Counter c)
     {
-        int m = count +  c.count;
-        int n = min(x,c.x);
-        return Counter(m,n);
+        Counter temp;
+        temp.count=count+c.count;
+        temp.x=min(x,c.x);
+        return temp;
     }
      Counter operator += (Counter c)
     {
