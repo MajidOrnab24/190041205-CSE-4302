@@ -73,7 +73,6 @@ cout << " Time=" << mins << ":" << secs;
 //---------------------------------------------------------------
 track::track(float lenT, int nH) : track_length(lenT), total_horses(nH),horse_count(0), elapsed_time(0.0)
 {
-    cout<<"fdfsdf"<<endl;
     init_graphics(); //start graphics
     total_horses = (total_horses > maxHorses) ? maxHorses : total_horses;
     for(int j=0; j<total_horses; j++) //make each horse
