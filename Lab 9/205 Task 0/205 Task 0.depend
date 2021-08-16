@@ -1,0 +1,20 @@
+# depslib dependency file v1.0
+1629096882 source:c:\users\majid\onedrive\desktop\new folder\205 task 0\main.cpp
+	"msoftcon.h"
+	<iostream>
+	<cstdlib>
+	<ctime>
+
+1007734784 c:\users\majid\onedrive\desktop\new folder\205 task 0\msoftcon.h
+	<windows.h>
+	<conio.h>
+	<math.h>
+
+1629095700 source:c:\users\majid\onedrive\desktop\new folder\205 task 0\msoftcon.cpp
+	"msoftcon.h"
+
+1629095095 c:\users\majid\onedrive\desktop\new folder\205 task 0\borlacon.h
+	<windows.h>
+	<conio.h>
+	<math.h>
+
