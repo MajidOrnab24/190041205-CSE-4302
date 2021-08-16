@@ -90,17 +90,29 @@ public:
         max_accl=0;
         fuel_capacity=0;
     }
-    Seats s;
-    Wheels w;
+    Seats s[3];
+    Wheels w[3];
     Engine e;
-    Doors d;
+    Doors d[3];
     void showdata()
     {
         cout<<"\nThe Car details are as follows: \n"<<endl;
-        s.showdata();
-        w.showdata();
+        for(int i=0;i<3;i++)
+        {
+            cout<<"For Seat "<<i+1<<endl;
+            s[i].showdata();
+        }
+        for(int i=0;i<3;i++)
+        {
+            cout<<"For Wheel "<<i+1<<endl;
+            w[i].getdata();
+        }
         e.showdata();
-        d.showdata();
+        for(int i=0;i<3;i++)
+        {
+            cout<<"For Door "<<i+1<<endl;
+            d[i].getdata();
+        }
         cout<<"Maximum Accelaration is : "<<max_accl<<endl;
         cout<<"Fuel Capacity is : "<<fuel_capacity<<endl;
 
@@ -111,10 +123,22 @@ public:
         cin>>max_accl;
         cout<<"Enter Fuel Capacity : ";
         cin>>fuel_capacity;
-        s.getdata();
-        w.getdata();
+        for(int i=0;i<3;i++)
+        {
+            cout<<"For Seat "<<i+1<<endl;
+            s[i].getdata();
+        }
+        for(int i=0;i<3;i++)
+        {
+            cout<<"For Wheel "<<i+1<<endl;
+            w[i].getdata();
+        }
         e.getdata();
-        d.getdata();
+        for(int i=0;i<3;i++)
+        {
+            cout<<"For Door "<<i+1<<endl;
+            d[i].getdata();
+        }
     }
 };
 int main()
@@ -122,6 +146,5 @@ int main()
     Car c;
     c.getdata();
     c.showdata();
+    return 0;
 }
-
-
