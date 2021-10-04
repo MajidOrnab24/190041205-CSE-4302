@@ -32,7 +32,7 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
-		<Unit filename="main.cpp" />
+		<Unit filename="205 Task 0.cpp" />
 		<Unit filename="msoftcon.cpp" />
 		<Unit filename="msoftcon.h" />
 		<Extensions>

@@ -113,8 +113,12 @@ void track::run()
         for(int j=0; j<total_horses; j++)
             hArray[j]->display_horse(elapsed_time);
         wait(500);
+
     }
-    getch(); //eat the keystroke
+    if(kbhit())
+    {
+        getch();
+    }
     cout << endl;
 }
 //---------------------------------------------------------------

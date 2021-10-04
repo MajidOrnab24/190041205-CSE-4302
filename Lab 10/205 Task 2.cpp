@@ -123,5 +123,6 @@ int main()
 
     cout<<"For object d after initialization"<<endl;
     d.showdata();
+    test fun=d;
 
 }
