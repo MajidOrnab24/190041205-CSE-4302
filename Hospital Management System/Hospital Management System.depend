@@ -1,0 +1,24 @@
+# depslib dependency file v1.0
+1635022491 source:d:\my class\3rd semester\cse 4302(oop lab)\hospital management system\main.cpp
+	<iostream>
+	"doctor.h"
+	<windows.h>
+
+1635022684 d:\my class\3rd semester\cse 4302(oop lab)\hospital management system\doctor.h
+	<process.h>
+	<iostream>
+	<typeinfo>
+	"patient.h"
+	<stdio.h>
+	<string.h>
+	<string>
+	<vector>
+	<fstream>
+
+1635021629 d:\my class\3rd semester\cse 4302(oop lab)\hospital management system\patient.h
+	<iostream>
+	<stdio.h>
+	<string.h>
+	<string>
+	<vector>
+
