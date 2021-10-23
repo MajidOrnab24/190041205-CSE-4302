@@ -195,7 +195,6 @@ int main()
             //f[n]->getdata();
             f[n]->productDetails();
             n++;
-
           }
         break;
       case 2:
