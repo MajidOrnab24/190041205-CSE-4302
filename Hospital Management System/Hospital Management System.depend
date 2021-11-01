@@ -23,12 +23,13 @@
 	<string>
 	<vector>
 
-1635753001 source:c:\users\majid\onedrive\desktop\hospital management system\main.cpp
+1635790721 source:c:\users\majid\onedrive\desktop\hospital management system\main.cpp
 	<iostream>
 	"doctor.h"
 	<windows.h>
+	<fstream>
 
-1635764514 c:\users\majid\onedrive\desktop\hospital management system\doctor.h
+1635791726 c:\users\majid\onedrive\desktop\hospital management system\doctor.h
 	<process.h>
 	<iostream>
 	<algorithm>
@@ -40,9 +41,10 @@
 	<vector>
 	<fstream>
 
-1635766013 c:\users\majid\onedrive\desktop\hospital management system\patient.h
+1635791261 c:\users\majid\onedrive\desktop\hospital management system\patient.h
 	<iostream>
 	<stdio.h>
+	<conio.h>
 	<typeinfo>
 	<string.h>
 	<string>

@@ -1,5 +1,6 @@
 #include<iostream>
 #include <stdio.h>
+#include<conio.h>
 #include <typeinfo>
 #include <string.h>
 #include<string>
@@ -10,7 +11,39 @@ const int len= 32;
 const int MAX = 100;
 enum patient_type {p_p,p_e,p_i,p_s};
 using namespace std;
-enum bloodgrp_type{
+enum IN
+{
+    IN_BACK = 8,
+    IN_RET = 13
+};
+string takePasswdFromUser(char asterisk = '*')
+{
+    string password= "";
+    char c_input;
+    while (true)
+    {
+        c_input = _getch();
+        if (c_input == IN::IN_RET)
+        {
+            cout << endl;
+            return password;
+        }
+        else if (c_input == IN::IN_BACK && password.length() != 0)
+        {
+            password.pop_back();
+            cout << "\b \b";
+            continue;
+        }
+        else if (c_input == IN::IN_BACK && password.length() == 0)
+        {
+            continue;
+        }
+        password.push_back(c_input);
+        cout << asterisk;
+    }
+}
+enum bloodgrp_type
+{
     A_pos,
     A_neg,
     B_pos,
@@ -32,35 +65,36 @@ option2 bloodgrp[]=
     "O+",
     "O-"
 };
+enum deptartment_no
+{
+    Cardiology,
+    Medicine,
+    Surgery,
+    Neurosurgery,
+    ENT,
+    Darmatology,
+    Paediatrics,
+    Gynaecology,
+    Nephrology,
+    Orthopaedic,
+    Neurology,
+    Endocrinology
+};
 typedef char option[32];
-enum deptartment_no{
-        Cardiology,
-        Medicine,
-        Surgery,
-        Neurosurgery,
-        ENT,
-        Darmatology,
-        Paediatrics,
-        Gynaecology,
-        Nephrology,
-        Orthopaedic,
-        Neurology,
-        Endocrinology
-    };
 option deptartment[]=
 {
-        "Cardiology",
-        "Medicine",
-        "Surgery",
-        "Neurosurgery",
-        "ENT",
-        "Darmatology",
-        "Paediatrics",
-        "Gynaecology",
-        "Nephrology",
-        "Orthopaedic",
-        "Neurology",
-        "Endocrinology"
+    "Cardiology",
+    "Medicine",
+    "Surgery",
+    "Neurosurgery",
+    "ENT",
+    "Darmatology",
+    "Paediatrics",
+    "Gynaecology",
+    "Nephrology",
+    "Orthopaedic",
+    "Neurology",
+    "Endocrinology"
 };
 typedef char option3[32];
 option3 week[]=
@@ -133,6 +167,8 @@ private:
     char a_name[len],a_address[len],username[len],password[len];
 
 public:
+    admin(){};
+    ~admin(){};
     int ad=0;
     void setAdata()
     {
@@ -159,40 +195,43 @@ public:
     {
         int a,b,c;
         char temp[len],temp2[len];
+        string input;
         while(true)
         {
-        cout<<"*****************************************ADMIN PANEL****************************************************"<<endl;
-        cout<<"Username : ";
-        cin>>temp;
-       a=strcmp(username,temp);;
-        cout<<"Password : ";
-        cin>>temp2;
-       b=strcmp(password,temp2);
-        if(a==0&&b==0)
-        {
-            ad=1;
-            break;
-        }
-        else
-        {
-            cout<<"Wrong username or password"<<endl;
-            cout<<"Press 1 to try again\n"<<"Press 2 to return to mainmenu\n"<<"Press 3 to change Username & Password "<<endl;
-            cin>>c;
-            switch(c)
+            cout<<"*****************************************ADMIN PANEL****************************************************"<<endl;
+            cout<<"Username : ";
+            cin>>temp;
+            a=strcmp(username,temp);
+            cout<<"Password : ";
+            input=takePasswdFromUser();
+            strcpy(temp2, input.c_str());
+            //cin>>temp2;
+            b=strcmp(password,temp2);
+            if(a==0&&b==0)
             {
-            case 1:
-                cout<<"Try again please"<<endl;
-                system("cls");
-                break;
-            case 2:
-                return;
-                break;
-            case 3:
-                system("cls");
-                this->forgot();
+                ad=1;
                 break;
             }
-        }
+            else
+            {
+                cout<<"Wrong username or password"<<endl;
+                cout<<"Press 1 to try again\n"<<"Press 2 to return to mainmenu\n"<<"Press 3 to change Username & Password "<<endl;
+                cin>>c;
+                switch(c)
+                {
+                case 1:
+                    cout<<"Try again please"<<endl;
+                    system("cls");
+                    break;
+                case 2:
+                    return;
+                    break;
+                case 3:
+                    system("cls");
+                    this->forgot();
+                    break;
+                }
+            }
         }
     }
 };
@@ -206,8 +245,8 @@ protected:
     static int pn;
 
 public:
-    patient(){};
-    ~patient(){};
+    patient() {};
+    ~patient() {};
     int pWard=0,pBed=0;
     int totalPayment=0;
     char dayName[len],timeslotName[len],currDoc[len];
@@ -227,7 +266,7 @@ public:
         cout<<"Enter patient's age: ";
         cin>>age;
         cout<<"Select Blood Group for patient: \n";
-        for(int i=0;i<8;i++)
+        for(int i=0; i<8; i++)
         {
             cout<<"Press  "<<i+1<<" for Blood Group :"<<bloodgrp[i]<<endl;
         }
@@ -235,7 +274,7 @@ public:
         cin>>a;
         strcpy(blood_grp,bloodgrp[a-1]);
         patientID=pn+1+190000;
-       patient::pn++;
+        patient::pn++;
         cout<<"Enter Working day number of Doctor for Appintment: ";
         cin>>d;
         cout<<"Enter Timeslot for appointment: ";
@@ -243,24 +282,24 @@ public:
 
 
     }
-   virtual void showPdetails()
+    virtual void showPdetails()
     {
         cout<<"\nPatient ID:"<<patientID<<"\nName: "<<p_name<<"\nAddress: "<<address<<"\nBlood Group:"<<blood_grp<<"\nPhone Number: "<<
-        phone_no<<"\nAge: "<<age<<endl;
+            phone_no<<"\nAge: "<<age<<endl;
         if(labCount==0)
         {
-            cout<<"No lab test done"<<endl;
+            cout<<"No lab test done";
         }
         else
         {
             cout<<"Lab Test: ";
-            for(int i=0;i<labCount; i++)
+            for(int i=0; i<labCount; i++)
             {
                 cout<<"\nName of Lab Test: "<<labTest[i];
             }
         }
         cout<<"\nCurrent Appointment:"<<"\nName: "<<currDoc<<"\nDoctor ID: "<<DocterID<<"\nAppointment Day: "<<dayName<<
-        "\nTimeslot: "<<timeslotName<<endl;
+            "\nTimeslot: "<<timeslotName<<endl;
     }
 };
 int patient::pn;
@@ -269,8 +308,8 @@ class indoorPatient: public patient
 protected:
 
 public:
-    indoorPatient(){};
-    ~indoorPatient(){};
+    indoorPatient() {};
+    ~indoorPatient() {};
     void setP_data()
     {
         patient::setP_data();
@@ -288,8 +327,8 @@ class regularPatient: public patient
 {
 protected:
 public:
-    regularPatient(){};
-    ~regularPatient(){};
+    regularPatient() {};
+    ~regularPatient() {};
     void setP_data()
     {
         patient::setP_data();
@@ -302,8 +341,8 @@ class emergencyPatient: public patient
 {
 protected:
 public:
-    emergencyPatient(){};
-    ~emergencyPatient(){};
+    emergencyPatient() {};
+    ~emergencyPatient() {};
     void setP_data()
     {
         cout<<"Enter type of accident: ";
@@ -323,8 +362,8 @@ class forSurgeryPatient: public patient
 {
 protected:
 public:
-    forSurgeryPatient(){};
-    ~forSurgeryPatient(){};
+    forSurgeryPatient() {};
+    ~forSurgeryPatient() {};
     void setP_data()
     {
         patient::setP_data();

@@ -14,9 +14,10 @@ enum doctor_type {d_p,d_e,d_i,d_s};
 template <typename T>
 class Comparator
 {
-  public:
-    const bool operator() (const T *a, const T *b) {
-      return a->DocterID < b->DocterID;
+public:
+    const bool operator() (const T *a, const T *b)
+    {
+        return a->DocterID < b->DocterID;
     }
 };
 class doctor
@@ -41,8 +42,8 @@ public:
     {
         while(!arr.empty())
         {
-        delete arr.back(),
-           arr.pop_back();
+            delete arr.back(),
+                   arr.pop_back();
         }
 //        for(int i=0;i<n;i++)
 //        {
@@ -58,6 +59,7 @@ public:
     static void display();
     static void sack();
     static void read();
+    static int moneyAmount();
     static void patToDocPatients();
     static void assignWardBed();
     static void assignLab();
@@ -104,8 +106,6 @@ int doctor::wardno=10;
 int doctor::bedno=18;
 int doctor::ward[MAX][MAX];
 vector<doctor*> doctor::arr;
-//doctor* doctor::arr[MAX];
-
 class physician : public doctor
 {
 private:
@@ -313,7 +313,7 @@ public:
 
             }
         }
-         cout<<"Ward no: "<<wardAssign<<endl;
+        cout<<"Ward no: "<<wardAssign<<endl;
     }
 
 
@@ -425,12 +425,12 @@ void doctor::sack()
         return;
     }
     cout<<"flag";
-    for(int i=0;i<arr.size();i++)
+    for(int i=0; i<arr.size(); i++)
     {
         if(arr[i]->doctorID==docID)
         {
             cur=arr[i]->patient_no;
-           arr.erase(arr.begin()+i);
+            arr.erase(arr.begin()+i);
             temp++;
             n--;
             break;
@@ -438,7 +438,7 @@ void doctor::sack()
         patientR=patientR+arr[i]->patient_no;
     }
     cout<<"flag";
-    for(int j=patientR;j<patientR+cur;j++)
+    for(int j=patientR; j<patientR+cur; j++)
     {
         pat.erase(pat.begin()+j);
     }
@@ -452,32 +452,38 @@ void doctor::sack()
 }
 void doctor::display()
 {
+    int id;
+    cout<<"Enter Doctor ID: ";
+    cin>>id;
     for(int i=0; i<n; i++)
     {
-        switch( arr[i]->get_type() )
+        if(arr[i]->doctorID==id)
         {
-        case d_p:
-            cout << ". Type: Physician\n";
+            switch( arr[i]->get_type() )
+            {
+            case d_p:
+                cout << "Type: Physician\n";
+                break;
+            case d_e:
+                cout << "Type: Emergency\n";
+                break;
+            case d_i:
+                cout << "Type: Indoor\n";
+                break;
+            case d_s:
+                cout << "Type: Surgeon\n";
+                break;
+            default:
+                cout << "Unknown type";
+            }
+            cout<<"////////////////////////////////////////////////////"<<endl;
+            cout<<"Doctor ID: "<< arr[i]->doctorID<<"\nDoctor Name: "<<arr[i]->d_name<<"\nDesignation:  "
+                <<arr[i]->c_specialist<<"\nDegree : "<<arr[i]->degree<<"\nInstituition: "
+                <<arr[i]->instituition<<"\nDepartment: "<<arr[i]->dept<<"| Department ID: "<<arr[i]->d_id<<"\nTotal Money earned: "
+                <<arr[i]->income<<" tk"<<endl;
             break;
-        case d_e:
-            cout << ". Type: Emergency\n";
-            break;
-        case d_i:
-            cout << ". Type: Indoor\n";
-            break;
-        case d_s:
-            cout << ". Type: Surgeon\n";
-            break;
-        default:
-            cout << ". Unknown type";
         }
-        cout<<"////////////////////////////////////////////////////"<<endl;
-        cout<<"Doctor no: "<<i+1<<endl;
-        cout<<"Doctor ID: "<< arr[i]->doctorID<<"\nDoctor Name: "<<arr[i]->d_name<<"\nDesignation:  "
-            <<arr[i]->c_specialist<<"\nDegree : "<<arr[i]->degree<<"\nInstituition: "
-            <<arr[i]->instituition<<"\nDepartment: "<<arr[i]->dept<<"| Department ID: "<<arr[i]->d_id<<"\nTotal Money: "
-            <<arr[i]->income<<endl;
-        cout << endl;
+
     }
 }
 doctor_type doctor::get_type()
@@ -506,7 +512,7 @@ void PatWrite()
     ouf.open("Patient.DAT", ios::trunc | ios::binary);
     if(!ouf)
     {
-        cout << "\nCan’t open file\n";
+        cout << "\nCan't open file\n";
         return;
     }
     for(int j=0; j<pat.size(); j++)
@@ -531,7 +537,7 @@ void PatWrite()
         ouf.write((char*)(pat[j]),size);
         if(!ouf)
         {
-            cout << "\nCan’t write to file\n";
+            cout << "\nCan't write to file\n";
             return;
         }
     }
@@ -548,7 +554,7 @@ void PatRead()
     inf.open("Patient.DAT", ios::binary);
     if(!inf)
     {
-        cout << "\nCan’t open file\n";
+        cout << "\nCan't open file\n";
         return;
     }
     int k=0;
@@ -559,21 +565,21 @@ void PatRead()
             break;
         if(!inf)
         {
-            cout << "\nCan’t read type from file\n";
+            cout << "\nCan't read type from file\n";
             return;
         }
         switch(Ptype)
         {
         case p_p:
-             pat.push_back(new regularPatient);
+            pat.push_back(new regularPatient);
             size=sizeof(regularPatient);
             break;
         case p_e:
-             pat.push_back(new emergencyPatient);
+            pat.push_back(new emergencyPatient);
             size=sizeof(emergencyPatient);
             break;
         case p_i:
-             pat.push_back(new indoorPatient);
+            pat.push_back(new indoorPatient);
             size=sizeof(indoorPatient);
             break;
         case p_s:
@@ -587,14 +593,52 @@ void PatRead()
         inf.read( (char*)pat[k], size );
         if(!inf)
         {
-            cout << "\nCan’t read data from file\n";
+            cout << "\nCan't read data from file\n";
             return;
         }
-       k++;
+        k++;
     }
 
     cout << "All patients data retrived succesfully\n";
 
+}
+void lookUpPat()
+{
+    int id;
+    cout<<"Enter Patient ID: ";
+    cin>>id;
+    for(int i=0; i<pat.size(); i++)
+    {
+        if(pat[i]->patientID==id)
+        {
+            switch( pat[i]->get_Ptype() )
+            {
+            case p_p:
+                cout << "\nType: Regular Patient";
+                break;
+            case p_e:
+                cout << "\nType: Emergency Patient";
+                break;
+            case p_i:
+                cout << "\nType: Indoor Patient";
+                break;
+            case p_s:
+                cout << "\nType: Patient for Surgery";
+                break;
+            default:
+                cout << "Unknown type";
+            }
+            pat[i]->showPdetails();
+            cout<<"Total Money Spent: "<<pat[i]->totalPayment<<" tk"<<endl;
+        }
+
+    }
+}
+int doctor::moneyAmount()
+{
+    int a;
+    a=money;
+    return a;
 }
 void doctor::write()
 {
@@ -605,7 +649,7 @@ void doctor::write()
     ouf.open("Doctor.DAT", ios::trunc | ios::binary);
     if(!ouf)
     {
-        cout << "\nCan’t open file\n";
+        cout << "\nCan't open file\n";
         return;
     }
     for(int j=0; j<n; j++)
@@ -631,7 +675,7 @@ void doctor::write()
         ouf.write((char*)(arr[j]),size);
         if(!ouf)
         {
-            cout << "\nCan’t write to file\n";
+            cout << "\nCan't write to file\n";
             return;
         }
     }
@@ -644,7 +688,7 @@ void doctor::read()
     inf.open("Doctor.DAT", ios::binary);
     if(!inf)
     {
-        cout << "\nCan’t open file\n";
+        cout << "\nCan't open file\n";
         return;
     }
     n = 0;
@@ -655,7 +699,7 @@ void doctor::read()
             break;
         if(!inf)
         {
-            cout << "\nCan’t read type from file\n";
+            cout << "\nCan't read type from file\n";
             return;
         }
         switch(Dtype)
@@ -683,7 +727,7 @@ void doctor::read()
         inf.read( (char*)arr[n], size );
         if(!inf)
         {
-            cout << "\nCan’t read data from file\n";
+            cout << "\nCan't read data from file\n";
             return;
         }
         n++;
@@ -696,7 +740,7 @@ void doctor::assignWardBed()
     cout<<"Enter Doctor ID: ";
     int did,b,temp=0,pid,dockeep,c,bed;
     cin>>did;
-    for(int i=0;i<n;i++)
+    for(int i=0; i<n; i++)
     {
         if(arr[i]->doctorID==did)
         {
@@ -725,13 +769,13 @@ void doctor::assignWardBed()
                 if(bed<1||bed>bedno)
                 {
                     cout<<"Invalid bed no try again"<<endl;
-                     break;
+                    break;
                 }
                 ward[arr[dockeep]->wardAssign-1][bed]=arr[dockeep]->patientPointer[i]->patientID;
                 arr[dockeep]->patientPointer[i]->pWard=arr[dockeep]->wardAssign;
                 arr[dockeep]->patientPointer[i]->pBed=bed;
-                 cout<<"Successfully Got into Ward"<<endl;
-                 break;
+                cout<<"Successfully Got into Ward"<<endl;
+                break;
             }
         }
     }
@@ -745,7 +789,7 @@ void doctor::assignLab()
     char lab[len];
     cout<<"Enter Doctor ID: ";
     cin>>DId;
-    for(int i=0;i<n;i++)
+    for(int i=0; i<n; i++)
     {
         if(arr[i]->doctorID==DId)
         {
@@ -780,11 +824,11 @@ void doctor::assignLab()
                 cout<<"flag"<<endl;
                 strcpy(arr[dock]->patientPointer[i]->labTest[lc],lab);
                 //strcpy(pat[patNo+i]->labTest[lc],lab);
-               // pat[patNo+i]->labCount++;
+                // pat[patNo+i]->labCount++;
                 arr[dock]->patientPointer[i]->labCount++;
 
-                 cout<<"Successfully Paid for Lab test and ready for lab"<<endl;
-                 break;
+                cout<<"Successfully Paid for Lab test and ready for lab"<<endl;
+                break;
             }
         }
     }
@@ -844,8 +888,8 @@ void doctor::searchAllpatientsOfDoc(int d)
         {
             cout<<"////////////////////////////////////////////////////"<<endl;
             cout<<"Doctor no: "<<i+1<<endl;
-                        cout<<"Doctor ID: "<< arr[i]->doctorID<<"\nDoctor Name: "<<arr[i]->d_name<<"\nDesignation:  " <<arr[i]->c_specialist<<"\nDegree : "<<arr[i]->degree<<"\nInstituition: "
-            <<arr[i]->instituition<<"\nDepartment: "<<arr[i]->dept<<". Department ID: "<<arr[i]->d_id<<endl;
+            cout<<"Doctor ID: "<< arr[i]->doctorID<<"\nDoctor Name: "<<arr[i]->d_name<<"\nDesignation:  " <<arr[i]->c_specialist<<"\nDegree : "<<arr[i]->degree<<"\nInstituition: "
+                <<arr[i]->instituition<<"\nDepartment: "<<arr[i]->dept<<". Department ID: "<<arr[i]->d_id<<endl;
             temp++;
         }
     }
@@ -905,10 +949,17 @@ void doctor:: searchD_ID(int d,int flag)
     cout<<"Press the Doctor No.for taking appointment: "<<endl;
     int al,a;
     int b,q,z,v,dayCount;
+    while(1)
+    {
+        cin>>al;
+        if(al<=n&&al!=0)
+            break;
+        else
+            cout<<"Enter Valid Doctor no:"<<endl;
+    }
     switch(flag)
     {
     case 1:
-        cin>>al;
         a=al-1;
         b=arr[a]->patient_no;
         if(b==108)
@@ -937,22 +988,22 @@ void doctor:: searchD_ID(int d,int flag)
         cout<<"Enter Payment for appointment 500 tk"<<endl;
         while(true)
         {
-             cin>>mon;
-             if(mon==500)
-             {
-                 cout<<"Thank You for your kind Cooperation"<<endl;
-                 break;
-             }
-             else if(mon>500)
-             {
-                 cout<<"Returned money :"<<mon-500<<" tk"<<endl;
-                 cout<<"Thank You for your kind Cooperation"<<endl;
-                 break;
-             }
-             else if(mon<500)
-             {
-                 cout<<"Requirement of money not met please provide 500 tk"<<endl;
-             }
+            cin>>mon;
+            if(mon==500)
+            {
+                cout<<"Thank You for your kind Cooperation"<<endl;
+                break;
+            }
+            else if(mon>500)
+            {
+                cout<<"Returned money :"<<mon-500<<" tk"<<endl;
+                cout<<"Thank You for your kind Cooperation"<<endl;
+                break;
+            }
+            else if(mon<500)
+            {
+                cout<<"Requirement of money not met please provide 500 tk"<<endl;
+            }
         }
         arr[a]->income=arr[a]->income+450;
         money=money+50;
@@ -961,7 +1012,7 @@ void doctor:: searchD_ID(int d,int flag)
         arr[a]->patient_no=b;
         break;
     case 2:
-        cin>>al;
+        //cin>>al;
         a=al-1;
         b=arr[a]->patient_no;
         if(b==84)
@@ -999,20 +1050,20 @@ void doctor:: searchD_ID(int d,int flag)
         {
             cin>>mon;
             if(mon==1000)
-             {
-                 cout<<"Thank You for your kind Cooperation"<<endl;
-                 break;
-             }
-             else if(mon>1000)
-             {
-                 cout<<"Returned money :"<<mon-1000<<" tk"<<endl;
-                 cout<<"Thank You for your kind Cooperation"<<endl;
-                 break;
-             }
-             else if(mon<1000)
-             {
-                 cout<<"Requirement of money not met please provide 1000 tk"<<endl;
-             }
+            {
+                cout<<"Thank You for your kind Cooperation"<<endl;
+                break;
+            }
+            else if(mon>1000)
+            {
+                cout<<"Returned money :"<<mon-1000<<" tk"<<endl;
+                cout<<"Thank You for your kind Cooperation"<<endl;
+                break;
+            }
+            else if(mon<1000)
+            {
+                cout<<"Requirement of money not met please provide 1000 tk"<<endl;
+            }
         }
         arr[a]->income=arr[a]->income+900;
         money=money+100;
@@ -1021,7 +1072,7 @@ void doctor:: searchD_ID(int d,int flag)
         arr[a]->patient_no=b;
         break;
     case 3:
-        cin>>al;
+        //cin>>al;
         a=al-1;
         b=arr[a]->patient_no;
         if(b==84)
@@ -1057,22 +1108,22 @@ void doctor:: searchD_ID(int d,int flag)
         cout<<"Enter Payment for appointment 1000tk"<<endl;
         while(true)
         {
-             cin>>mon;
-              if(mon==1000)
-             {
-                 cout<<"Thank You for your kind Cooperation"<<endl;
-                 break;
-             }
-             else if(mon>1000)
-             {
-                 cout<<"Returned money :"<<mon-1000<<" tk"<<endl;
-                 cout<<"Thank You for your kind Cooperation"<<endl;
-                 break;
-             }
-             else if(mon<1000)
-             {
-                 cout<<"Requirement of money not met please provide 1000 tk"<<endl;
-             }
+            cin>>mon;
+            if(mon==1000)
+            {
+                cout<<"Thank You for your kind Cooperation"<<endl;
+                break;
+            }
+            else if(mon>1000)
+            {
+                cout<<"Returned money :"<<mon-1000<<" tk"<<endl;
+                cout<<"Thank You for your kind Cooperation"<<endl;
+                break;
+            }
+            else if(mon<1000)
+            {
+                cout<<"Requirement of money not met please provide 1000 tk"<<endl;
+            }
         }
         arr[a]->income=arr[a]->income+900;
         money=money+100;
@@ -1081,7 +1132,7 @@ void doctor:: searchD_ID(int d,int flag)
         arr[a]->patient_no=b;
         break;
     case 4:
-        cin>>al;
+        //cin>>al;
         a=al-1;
         b=arr[a]->patient_no;
         if(arr[a]->patient_no==108)
@@ -1110,22 +1161,22 @@ void doctor:: searchD_ID(int d,int flag)
         arr[a]->patientPointer[b]->DocterID=arr[a]->doctorID;
         while(true)
         {
-             cin>>mon;
-              if(mon==2000)
-             {
-                 cout<<"Thank You for your kind Cooperation"<<endl;
-                 break;
-             }
-             else if(mon>2000)
-             {
-                 cout<<"Returned money :"<<mon-2000<<" tk"<<endl;
-                 cout<<"Thank You for your kind Cooperation"<<endl;
-                 break;
-             }
-             else if(mon<2000)
-             {
-                 cout<<"Requirement of money not met please provide 2000 tk"<<endl;
-             }
+            cin>>mon;
+            if(mon==2000)
+            {
+                cout<<"Thank You for your kind Cooperation"<<endl;
+                break;
+            }
+            else if(mon>2000)
+            {
+                cout<<"Returned money :"<<mon-2000<<" tk"<<endl;
+                cout<<"Thank You for your kind Cooperation"<<endl;
+                break;
+            }
+            else if(mon<2000)
+            {
+                cout<<"Requirement of money not met please provide 2000 tk"<<endl;
+            }
         }
         arr[a]->income=arr[a]->income+1800;
         money=money+200;
@@ -1139,6 +1190,7 @@ void doctor:: searchD_ID(int d,int flag)
     pat.push_back(arr[a]->patientPointer[b-1]);
     sort(pat.begin(),pat.end(),Comparator<patient>());
     cout<<"Patient has taken appointment succesfully"<<endl;
+    cout<<"Alloted Patient ID: "<<arr[a]->patientPointer[b-1]->patientID<<endl;
     system("pause");
 
 }
