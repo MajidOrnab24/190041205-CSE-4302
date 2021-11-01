@@ -1,5 +1,6 @@
 #include<iostream>
 #include <stdio.h>
+#include <typeinfo>
 #include <string.h>
 #include<string>
 #include <vector>
@@ -7,6 +8,7 @@ using namespace std;
 const int MAXM = 1000;
 const int len= 32;
 const int MAX = 100;
+enum patient_type {p_p,p_e,p_i,p_s};
 using namespace std;
 enum bloodgrp_type{
     A_pos,
@@ -67,7 +69,7 @@ option3 week[]=
     "Sunday",
     "Monday",
     "Tuesday",
-    "Wdnesday",
+    "Wednesday",
     "Thursday",
     "Friday"
 };
@@ -197,7 +199,7 @@ public:
 class patient
 {
 protected:
-    char p_name[len],address[len],problem[len];
+    char p_name[len],address[len],surgery[len],accident[len];
     int age;
     char blood_grp[len];
     char phone_no[len];
@@ -209,10 +211,10 @@ public:
     int pWard=0,pBed=0;
     int totalPayment=0;
     char dayName[len],timeslotName[len],currDoc[len];
-    int d,t,patientID;
-    vector<char*>prevDoc;
+    int d,t,patientID,DocterID;
+    virtual patient_type get_Ptype();
     int labCount=0;
-    vector<char*>labTest;
+    char labTest[len][len];
     virtual void setP_data()
     {
         cout<<"\nEnter patient's name: ";
@@ -245,24 +247,19 @@ public:
     {
         cout<<"\nPatient ID:"<<patientID<<"\nName: "<<p_name<<"\nAddress: "<<address<<"\nBlood Group:"<<blood_grp<<"\nPhone Number: "<<
         phone_no<<"\nAge: "<<age<<endl;
-        if(labTest.empty())
+        if(labCount==0)
         {
             cout<<"No lab test done"<<endl;
         }
         else
         {
-            cout<<"Lab Test: "<<endl;
-            for(int i=0; i<labTest.size(); i++)
+            cout<<"Lab Test: ";
+            for(int i=0;i<labCount; i++)
             {
-                cout<<"\nName: "<<labTest[i]<<endl;
+                cout<<"\nName of Lab Test: "<<labTest[i];
             }
         }
-        cout<<"ALL APPOINTMENTS OF ALL  DOCTORS NAMES: ";
-        for(int i=0;i<prevDoc.size();i++)
-        {
-            cout<<"\nName: "<<prevDoc[i]<<endl;
-        }
-        cout<<"Current Appointment:"<<"\nName: "<<currDoc<<"\nAppointment Day: "<<dayName<<
+        cout<<"\nCurrent Appointment:"<<"\nName: "<<currDoc<<"\nDoctor ID: "<<DocterID<<"\nAppointment Day: "<<dayName<<
         "\nTimeslot: "<<timeslotName<<endl;
     }
 };
@@ -309,10 +306,17 @@ public:
     ~emergencyPatient(){};
     void setP_data()
     {
+        cout<<"Enter type of accident: ";
+        cin.ignore();
+        cin.getline(accident,len);
         patient::setP_data();
 
     }
-
+    void showPdetails()
+    {
+        cout<<"Accident: "<<accident<<endl;
+        patient::showPdetails();
+    }
 
 };
 class forSurgeryPatient: public patient
@@ -324,9 +328,30 @@ public:
     void setP_data()
     {
         patient::setP_data();
-
+        cout<<"Enter Name of surgery: ";
+        cin.getline(surgery,len);
+    }
+    void showPdetails()
+    {
+        patient::showPdetails();
+        cout<<"Surgery Name: "<<surgery<<endl;
     }
 
-
 };
-
+patient_type patient::get_Ptype()
+{
+    if( typeid(*this) == typeid(regularPatient) )
+        return p_p;
+    else if( typeid(*this)==typeid(emergencyPatient) )
+        return p_e;
+    else if( typeid(*this)==typeid(indoorPatient) )
+        return p_i;
+    else if( typeid(*this)==typeid(forSurgeryPatient) )
+        return p_s;
+    else
+    {
+        cerr << "\n Error patient type";
+        exit(1);
+    }
+    return p_p;
+};

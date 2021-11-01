@@ -1,5 +1,6 @@
 #include <process.h>
 #include<iostream>
+#include <algorithm>
 #include <typeinfo>
 #include"patient.h"
 #include <stdio.h>
@@ -10,6 +11,14 @@
 using namespace std;
 vector<patient*> pat;
 enum doctor_type {d_p,d_e,d_i,d_s};
+template <typename T>
+class Comparator
+{
+  public:
+    const bool operator() (const T *a, const T *b) {
+      return a->DocterID < b->DocterID;
+    }
+};
 class doctor
 {
 protected:
@@ -22,26 +31,34 @@ protected:
     static int wardno,bedno;
     int income;
     static int ward[][MAX];
-    static doctor* arr[];
+    //static doctor* arr[];
+    static  vector<doctor*> arr;
     int patient_no=0;
     int keeper[6][19];
 public:
     doctor() {};
     ~doctor()
     {
-        for(int i=0;i<n;i++)
+        while(!arr.empty())
         {
-            delete arr[i];
+        delete arr.back(),
+           arr.pop_back();
         }
-         delete []arr;
+//        for(int i=0;i<n;i++)
+//        {
+//            delete arr[i];
+//        }
+//         delete []arr;
     };
     patient* patientPointer[108];
     static void add();
     static void WardInDe();
-     static void deleteArr();
+    static void deleteArr();
     static void BedInDe();
     static void display();
+    static void sack();
     static void read();
+    static void patToDocPatients();
     static void assignWardBed();
     static void assignLab();
     static void write();
@@ -86,7 +103,8 @@ int doctor::money;
 int doctor::wardno=10;
 int doctor::bedno=18;
 int doctor::ward[MAX][MAX];
-doctor* doctor::arr[MAX];
+vector<doctor*> doctor::arr;
+//doctor* doctor::arr[MAX];
 
 class physician : public doctor
 {
@@ -376,16 +394,16 @@ void doctor::add()
     switch(ch)
     {
     case 'p':
-        arr[n] = new physician;
+        arr.push_back(new physician);
         break;
     case 'e':
-        arr[n] = new emergencyDoc;
+        arr.push_back(new emergencyDoc);
         break;
     case 'i':
-        arr[n] = new indoorDoc;
+        arr.push_back(new indoorDoc);
         break;
     case 's':
-        arr[n] = new surgeon;
+        arr.push_back(new surgeon);
         break;
     default:
         cout << "\nUnknown doctor type\n";
@@ -393,12 +411,50 @@ void doctor::add()
     }
     arr[n++]->setD_data();
 }
+void doctor::sack()
+{
+    int docID;
+    int patientR=0,cur;
+    cout<<"Enter Doctor ID: ";
+    cin>>docID;
+    int temp=-1;
+    if(n==0)
+    {
+        cout<<"No Doctors available"<<endl;
+        system("pause");
+        return;
+    }
+    cout<<"flag";
+    for(int i=0;i<arr.size();i++)
+    {
+        if(arr[i]->doctorID==docID)
+        {
+            cur=arr[i]->patient_no;
+           arr.erase(arr.begin()+i);
+            temp++;
+            n--;
+            break;
+        }
+        patientR=patientR+arr[i]->patient_no;
+    }
+    cout<<"flag";
+    for(int j=patientR;j<patientR+cur;j++)
+    {
+        pat.erase(pat.begin()+j);
+    }
+    if(temp<0)
+    {
+        cout<<"No Doctors in that Doctor ID available"<<endl;
+        system("pause");
+        return;
+    }
+
+}
 void doctor::display()
 {
-    for(int j=0; j<n; j++)
+    for(int i=0; i<n; i++)
     {
-        cout << (j+1);
-        switch( arr[j]->get_type() )
+        switch( arr[i]->get_type() )
         {
         case d_p:
             cout << ". Type: Physician\n";
@@ -415,7 +471,12 @@ void doctor::display()
         default:
             cout << ". Unknown type";
         }
-        arr[j]->showDetails();
+        cout<<"////////////////////////////////////////////////////"<<endl;
+        cout<<"Doctor no: "<<i+1<<endl;
+        cout<<"Doctor ID: "<< arr[i]->doctorID<<"\nDoctor Name: "<<arr[i]->d_name<<"\nDesignation:  "
+            <<arr[i]->c_specialist<<"\nDegree : "<<arr[i]->degree<<"\nInstituition: "
+            <<arr[i]->instituition<<"\nDepartment: "<<arr[i]->dept<<"| Department ID: "<<arr[i]->d_id<<"\nTotal Money: "
+            <<arr[i]->income<<endl;
         cout << endl;
     }
 }
@@ -431,15 +492,114 @@ doctor_type doctor::get_type()
         return d_s;
     else
     {
-        cerr << "\n Error employe type";
+        cerr << "\n Error doctor type";
         exit(1);
     }
     return d_p;
 }
+void PatWrite()
+{
+    int size;
+    cout << "All patient info saved sucessfully\n";
+    ofstream ouf;
+    patient_type Ptype;
+    ouf.open("Patient.DAT", ios::trunc | ios::binary);
+    if(!ouf)
+    {
+        cout << "\nCan’t open file\n";
+        return;
+    }
+    for(int j=0; j<pat.size(); j++)
+    {
+        Ptype = pat[j]->get_Ptype();
+        ouf.write( (char*)&Ptype, sizeof(Ptype) );
+        switch(Ptype)
+        {
+        case p_p:
+            size=sizeof(regularPatient);
+            break;
+        case p_e:
+            size=sizeof(emergencyPatient);
+            break;
+        case p_i:
+            size=sizeof(indoorPatient);
+            break;
+        case p_s:
+            size=sizeof(forSurgeryPatient);
+            break;
+        }
+        ouf.write((char*)(pat[j]),size);
+        if(!ouf)
+        {
+            cout << "\nCan’t write to file\n";
+            return;
+        }
+    }
+}
+void PatRead()
+{
+    int size;
+//    regularPatient* r=NULL;
+//    emergencyPatient* e=NULL;
+//    indoorPatient* i=NULL;
+//    forSurgeryPatient* =NULL;
+    patient_type Ptype;
+    ifstream inf;
+    inf.open("Patient.DAT", ios::binary);
+    if(!inf)
+    {
+        cout << "\nCan’t open file\n";
+        return;
+    }
+    int k=0;
+    while(true)
+    {
+        inf.read( (char*)&Ptype, sizeof(Ptype) );
+        if( inf.eof() )
+            break;
+        if(!inf)
+        {
+            cout << "\nCan’t read type from file\n";
+            return;
+        }
+        switch(Ptype)
+        {
+        case p_p:
+             pat.push_back(new regularPatient);
+            size=sizeof(regularPatient);
+            break;
+        case p_e:
+             pat.push_back(new emergencyPatient);
+            size=sizeof(emergencyPatient);
+            break;
+        case p_i:
+             pat.push_back(new indoorPatient);
+            size=sizeof(indoorPatient);
+            break;
+        case p_s:
+            pat.push_back(new forSurgeryPatient);
+            size=sizeof(forSurgeryPatient);
+            break;
+        default:
+            cout << "\nUnknown type in file\n";
+            return;
+        }
+        inf.read( (char*)pat[k], size );
+        if(!inf)
+        {
+            cout << "\nCan’t read data from file\n";
+            return;
+        }
+       k++;
+    }
+
+    cout << "All patients data retrived succesfully\n";
+
+}
 void doctor::write()
 {
     int size;
-    cout << "Al doctor info saved sucessfully\n";
+    cout << "All doctor info saved sucessfully\n";
     ofstream ouf;
     doctor_type Dtype;
     ouf.open("Doctor.DAT", ios::trunc | ios::binary);
@@ -501,19 +661,19 @@ void doctor::read()
         switch(Dtype)
         {
         case d_p:
-            arr[n] = new physician;
+            arr.push_back(new physician);
             size=sizeof(physician);
             break;
         case d_e:
-            arr[n] = new emergencyDoc;
+            arr.push_back(new emergencyDoc);
             size=sizeof(emergencyDoc);
             break;
         case d_i:
-            arr[n] = new indoorDoc;
+            arr.push_back(new indoorDoc);
             size=sizeof(indoorDoc);
             break;
         case d_s:
-            arr[n] = new surgeon;
+            arr.push_back(new surgeon);
             size=sizeof(surgeon);
             break;
         default:
@@ -526,7 +686,6 @@ void doctor::read()
             cout << "\nCan’t read data from file\n";
             return;
         }
-        arr[n]->patient_no=0;
         n++;
     }
     cout << "All doctor data retrived succesfully\n";
@@ -582,7 +741,7 @@ void doctor::assignWardBed()
 void doctor::assignLab()
 {
     cout<<"THE PATIENT MUST APPOINTED TO ANY DOCTOR BEFORE ANY LAB TEST"<<endl;
-    int DId,PId,temp=0,dock,mon;
+    int DId,PId,temp=0,dock,mon,patNo=0;
     char lab[len];
     cout<<"Enter Doctor ID: ";
     cin>>DId;
@@ -594,6 +753,7 @@ void doctor::assignLab()
             dock=i;
             break;
         }
+        patNo=patNo+arr[i]->patient_no;
     }
     if(temp==0)
     {
@@ -612,11 +772,17 @@ void doctor::assignLab()
                 cout<<"Enter Name of lab test: ";
                 cin.ignore();
                 cin.getline(lab,len);
-                cout<<"Enter your money";
+                strcat(lab,"\0");
+                cout<<"Enter your money: ";
                 cin>>mon;
                 money+=mon;
-               arr[dock]->patientPointer[i]->labTest.push_back(lab);
-               arr[dock]->patientPointer[i]->labCount++;
+                int lc = arr[dock]->patientPointer[i]->labCount;
+                cout<<"flag"<<endl;
+                strcpy(arr[dock]->patientPointer[i]->labTest[lc],lab);
+                //strcpy(pat[patNo+i]->labTest[lc],lab);
+               // pat[patNo+i]->labCount++;
+                arr[dock]->patientPointer[i]->labCount++;
+
                  cout<<"Successfully Paid for Lab test and ready for lab"<<endl;
                  break;
             }
@@ -624,16 +790,24 @@ void doctor::assignLab()
     }
     system("pause");
 
-
-
 }
 void doctor::deleteArr()
 {
-    for(int i=0;i<n;i++)
+    arr.clear();
+}
+void doctor::patToDocPatients()
+{
+    int k=0,pCount;
+    for(int i=0; i<n; i++)
+    {
+        pCount=arr[i]->patient_no;
+        for(int j=0; j<pCount; j++)
         {
-            delete arr[i];
+            arr[i]->patientPointer[j]=pat[k];
+            k++;
         }
-    delete []arr;
+    }
+
 }
 void doctor::WardInDe()
 {
@@ -756,10 +930,10 @@ void doctor:: searchD_ID(int d,int flag)
         }
         v=arr[a]->patientPointer[b]->patientID;
         arr[a]->keeper[q-1][z]=v;
-        arr[a]->patientPointer[b]->prevDoc.push_back(arr[a]->d_name);
         strcpy(arr[a]->patientPointer[b]->dayName,week[dayCount-1]);
         strcpy(arr[a]->patientPointer[b]->timeslotName,timeslot[z-1]);
         strcpy(arr[a]->patientPointer[b]->currDoc,arr[a]->d_name);
+        arr[a]->patientPointer[b]->DocterID=arr[a]->doctorID;
         cout<<"Enter Payment for appointment 500 tk"<<endl;
         while(true)
         {
@@ -809,7 +983,6 @@ void doctor:: searchD_ID(int d,int flag)
         }
         v=arr[a]->patientPointer[b]->patientID;
         arr[a]->keeper[q-1][z]=v;
-        arr[a]->patientPointer[b]->prevDoc.push_back(arr[a]->d_name);
         strcpy(arr[a]->patientPointer[b]->dayName,week[dayCount-1]);
         if(arr[a]->e_shift==1)
         {
@@ -820,6 +993,7 @@ void doctor:: searchD_ID(int d,int flag)
             strcpy(arr[a]->patientPointer[b]->timeslotName,timeslot2[z-1]);
         }
         strcpy(arr[a]->patientPointer[b]->currDoc,arr[a]->d_name);
+        arr[a]->patientPointer[b]->DocterID=arr[a]->doctorID;
         cout<<"Enter Payment for appointment 1000tk"<<endl;
         while(true)
         {
@@ -869,7 +1043,6 @@ void doctor:: searchD_ID(int d,int flag)
         }
         v=arr[a]->patientPointer[b]->patientID;
         arr[a]->keeper[q-1][z]=v;
-        arr[a]->patientPointer[b]->prevDoc.push_back(arr[a]->d_name);
         strcpy(arr[a]->patientPointer[b]->dayName,week[dayCount-1]);
         if(arr[a]->i_shift==1)
         {
@@ -880,6 +1053,7 @@ void doctor:: searchD_ID(int d,int flag)
             strcpy(arr[a]->patientPointer[b]->timeslotName,timeslot2[z-1]);
         }
         strcpy(arr[a]->patientPointer[b]->currDoc,arr[a]->d_name);
+        arr[a]->patientPointer[b]->DocterID=arr[a]->doctorID;
         cout<<"Enter Payment for appointment 1000tk"<<endl;
         while(true)
         {
@@ -929,11 +1103,11 @@ void doctor:: searchD_ID(int d,int flag)
         }
         v=arr[a]->patientPointer[b]->patientID;
         arr[a]->keeper[q-1][z]=v;
-        arr[a]->patientPointer[b]->prevDoc.push_back(arr[a]->d_name);
         strcpy(arr[a]->patientPointer[b]->dayName,week[dayCount-1]);
         strcpy(arr[a]->patientPointer[b]->timeslotName,timeslot[z-1]);
         strcpy(arr[a]->patientPointer[b]->currDoc,arr[a]->d_name);
         cout<<"Enter Payment for appointment 2000tk"<<endl;
+        arr[a]->patientPointer[b]->DocterID=arr[a]->doctorID;
         while(true)
         {
              cin>>mon;
@@ -962,7 +1136,8 @@ void doctor:: searchD_ID(int d,int flag)
     default:
         cout << "\nUnknown command";
     }
-    pat.push_back(arr[a]->patientPointer[arr[a]->patient_no]);
+    pat.push_back(arr[a]->patientPointer[b-1]);
+    sort(pat.begin(),pat.end(),Comparator<patient>());
     cout<<"Patient has taken appointment succesfully"<<endl;
     system("pause");
 

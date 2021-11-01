@@ -50,8 +50,9 @@ int main()
             {
             system("cls");
             a.showdata();
-            cout<<"Enter Choice: "<<"\nPRESS 1 FOR HIRING A DOCTOR"<<
-                "\nPRESS 2 FOR INCREASING OR DECREASING WARDS"<<"\nPRESS 4 FOR INCREASING OR DECREASING BEDS IN ALL WARDS"<<endl;
+            cout<<"Enter Choice: "<<"\nPRESS 1 FOR HIRING A DOCTOR"<<"\nPRESS 2 FOR SACKING A DOCTOR"<<
+                "\nPRESS 3 FOR INCREASING OR DECREASING WARDS"<<"\nPRESS 4 FOR INCREASING OR DECREASING BEDS IN ALL WARDS"
+                <<"\nPRESS 5 FOR LOOKING UP ALL INFO ABOUT A DOCTOR"<<"\nPRESS 6 FOR LOOKING UP ALL INFO ABOUT A PATIENT"<<endl;
             int adminC;
             cin>>adminC;
             switch(adminC)
@@ -63,12 +64,27 @@ int main()
                 break;
             case 2:
                 system("cls");
+                doctor::sack();
+                system("pause");
+                break;
+            case 3:
+                system("cls");
                 doctor::WardInDe();
                 system("pause");
                 break;
             case 4:
                 system("cls");
                 doctor::BedInDe();
+                system("pause");
+                break;
+            case 5:
+                system("cls");
+                doctor::display();
+                system("pause");
+                break;
+            case 6:
+                system("cls");
+                //lookupat
                 system("pause");
                 break;
             default:
@@ -79,6 +95,10 @@ int main()
             break;
         case 'd':
             system("cls");
+            for(int i=0;i<pat.size();i++)
+            {
+                pat[i]->showPdetails();
+            }
             cout<<"Enter Doctor ID: ";
             int Did;
             cin>>Did;
@@ -90,11 +110,14 @@ int main()
             break;
         case 's':
              doctor::write();
+             PatWrite();
              system("pause");
              break;
         case 'r':
             doctor::deleteArr();
             doctor::read();
+            PatRead();
+            doctor::patToDocPatients();
             system("pause");
              break;
         case 'l':
