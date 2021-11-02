@@ -31,14 +31,15 @@ void printDept()
 
 int main()
 {
-   admin a;
-   //a.setAdata();
+    admin a;
+    //a.setAdata();
    ifstream file2;
-   file2.open("Admin.txt",ios::binary);
-   file2.seekg(0);
-   file2.read((char*)&a,sizeof(a));
-   file2.close();
-   char ch;
+    file2.open("Admin.txt",ios::binary);
+    file2.seekg(0);
+    file2.read((char*)&a,sizeof(a));
+    file2.close();
+ofstream file1;
+    char ch;
     while(true)
     {
         system("cls");
@@ -55,7 +56,6 @@ int main()
             if(a.ad==1)
             {
                 system("cls");
-                ofstream file1;
                 file1.open("Admin.txt",ios::trunc|ios::binary);
                 a.ad=0;
                 file1.write((char*)&a,sizeof(a));
@@ -113,10 +113,10 @@ int main()
             break;
         case 'd':
             system("cls");
-            for(int i=0; i<pat.size(); i++)
-            {
-                pat[i]->showPdetails();
-            }
+//            for(int i=0; i<pat.size(); i++) for checking if info are
+//            {
+//                pat[i]->showPdetails();
+//            }
             cout<<"Enter Doctor ID: ";
             int Did;
             cin>>Did;
@@ -129,11 +129,18 @@ int main()
         case 's':
             doctor::write();
             PatWrite();
+            a.totalAmoney=doctor::moneyAmount();
+            //ofstream file1;
+            file1.open("Admin.txt",ios::trunc|ios::binary);
+            a.ad=0;
+            file1.write((char*)&a,sizeof(a));
+            file1.close();
             system("pause");
             break;
         case 'r':
             doctor::deleteArr();
             doctor::read();
+            doctor::setMoneyAmount(a.totalAmoney);
             PatRead();
             doctor::patToDocPatients();
             system("pause");

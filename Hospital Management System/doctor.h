@@ -32,7 +32,6 @@ protected:
     static int wardno,bedno;
     int income;
     static int ward[][MAX];
-    //static doctor* arr[];
     static  vector<doctor*> arr;
     int patient_no=0;
     int keeper[6][19];
@@ -45,11 +44,6 @@ public:
             delete arr.back(),
                    arr.pop_back();
         }
-//        for(int i=0;i<n;i++)
-//        {
-//            delete arr[i];
-//        }
-//         delete []arr;
     };
     patient* patientPointer[108];
     static void add();
@@ -58,6 +52,7 @@ public:
     static void BedInDe();
     static void display();
     static void sack();
+    static void setMoneyAmount(int);
     static void read();
     static int moneyAmount();
     static void patToDocPatients();
@@ -90,8 +85,6 @@ public:
         strcpy(dept,deptartment[ch-1]);
         d_id=d+ch;
         income=0;
-
-
     }
     virtual void showDetails()
     {
@@ -424,7 +417,6 @@ void doctor::sack()
         system("pause");
         return;
     }
-    cout<<"flag";
     for(int i=0; i<arr.size(); i++)
     {
         if(arr[i]->doctorID==docID)
@@ -437,10 +429,13 @@ void doctor::sack()
         }
         patientR=patientR+arr[i]->patient_no;
     }
-    cout<<"flag";
-    for(int j=patientR; j<patientR+cur; j++)
+    if(!pat.empty())
     {
-        pat.erase(pat.begin()+j);
+        for(int j=patientR; j<patientR+cur; j++)
+        {
+            pat.erase(pat.begin()+j);
+        }
+
     }
     if(temp<0)
     {
@@ -545,10 +540,6 @@ void PatWrite()
 void PatRead()
 {
     int size;
-//    regularPatient* r=NULL;
-//    emergencyPatient* e=NULL;
-//    indoorPatient* i=NULL;
-//    forSurgeryPatient* =NULL;
     patient_type Ptype;
     ifstream inf;
     inf.open("Patient.DAT", ios::binary);
@@ -598,9 +589,8 @@ void PatRead()
         }
         k++;
     }
-
+    patient::setPcount(k);
     cout << "All patients data retrived succesfully\n";
-
 }
 void lookUpPat()
 {
@@ -639,6 +629,10 @@ int doctor::moneyAmount()
     int a;
     a=money;
     return a;
+}
+void doctor::setMoneyAmount(int a)
+{
+    money=a;
 }
 void doctor::write()
 {
@@ -738,7 +732,7 @@ void doctor::assignWardBed()
 {
     cout<< "Patient MUST be under a indoor Doctor and concerned doctor must be assigned to a ward"<<endl;
     cout<<"Enter Doctor ID: ";
-    int did,b,temp=0,pid,dockeep,c,bed;
+    int did,b,temp=0,pid,dockeep,c,bed,payment;
     cin>>did;
     for(int i=0; i<n; i++)
     {
@@ -771,6 +765,30 @@ void doctor::assignWardBed()
                     cout<<"Invalid bed no try again"<<endl;
                     break;
                 }
+                cout<<"Enter money 10000 Tk: ";
+                while(true)
+                {
+                    cin>>payment;
+                    if(payment==10000)
+                    {
+                        cout<<"Thank You for your kind Cooperation"<<endl;
+                        break;
+                    }
+                    else if(payment>10000)
+                    {
+                        cout<<"Returned money :"<<payment-10000<<" tk"<<endl;
+                        payment=10000;
+                        cout<<"Thank You for your kind Cooperation"<<endl;
+                        break;
+                    }
+                    else if(payment<10000)
+                    {
+                        cout<<"Requirement of money not met please provide 10000 tk"<<endl;
+                    }
+                }
+                money=money+payment-1000;
+                arr[dockeep]->income=arr[dockeep]->income+1000;
+                arr[dockeep]->patientPointer[i]->totalPayment+=10000;
                 ward[arr[dockeep]->wardAssign-1][bed]=arr[dockeep]->patientPointer[i]->patientID;
                 arr[dockeep]->patientPointer[i]->pWard=arr[dockeep]->wardAssign;
                 arr[dockeep]->patientPointer[i]->pBed=bed;
@@ -819,9 +837,10 @@ void doctor::assignLab()
                 strcat(lab,"\0");
                 cout<<"Enter your money: ";
                 cin>>mon;
-                money+=mon;
+                money=money+mon-500;
+                arr[dock]->income=arr[dock]->income+500;
+                arr[dock]->patientPointer[i]->totalPayment+=mon;
                 int lc = arr[dock]->patientPointer[i]->labCount;
-                cout<<"flag"<<endl;
                 strcpy(arr[dock]->patientPointer[i]->labTest[lc],lab);
                 //strcpy(pat[patNo+i]->labTest[lc],lab);
                 // pat[patNo+i]->labCount++;
@@ -837,6 +856,7 @@ void doctor::assignLab()
 }
 void doctor::deleteArr()
 {
+    pat.clear();
     arr.clear();
 }
 void doctor::patToDocPatients()
@@ -979,6 +999,10 @@ void doctor:: searchD_ID(int d,int flag)
             delete arr[a]->patientPointer[b];
             return;
         }
+        if(q>arr[a]->p)
+        {
+            q--;
+        }
         v=arr[a]->patientPointer[b]->patientID;
         arr[a]->keeper[q-1][z]=v;
         strcpy(arr[a]->patientPointer[b]->dayName,week[dayCount-1]);
@@ -997,6 +1021,7 @@ void doctor:: searchD_ID(int d,int flag)
             else if(mon>500)
             {
                 cout<<"Returned money :"<<mon-500<<" tk"<<endl;
+                mon=500;
                 cout<<"Thank You for your kind Cooperation"<<endl;
                 break;
             }
@@ -1032,6 +1057,10 @@ void doctor:: searchD_ID(int d,int flag)
             delete arr[a]->patientPointer[b];
             return;
         }
+        if(q>arr[a]->p)
+        {
+            q--;
+        }
         v=arr[a]->patientPointer[b]->patientID;
         arr[a]->keeper[q-1][z]=v;
         strcpy(arr[a]->patientPointer[b]->dayName,week[dayCount-1]);
@@ -1057,6 +1086,7 @@ void doctor:: searchD_ID(int d,int flag)
             else if(mon>1000)
             {
                 cout<<"Returned money :"<<mon-1000<<" tk"<<endl;
+                mon=1000;
                 cout<<"Thank You for your kind Cooperation"<<endl;
                 break;
             }
@@ -1092,6 +1122,10 @@ void doctor:: searchD_ID(int d,int flag)
             delete arr[a]->patientPointer[b];
             return;
         }
+        if(q>arr[a]->p)
+        {
+            q--;
+        }
         v=arr[a]->patientPointer[b]->patientID;
         arr[a]->keeper[q-1][z]=v;
         strcpy(arr[a]->patientPointer[b]->dayName,week[dayCount-1]);
@@ -1117,6 +1151,7 @@ void doctor:: searchD_ID(int d,int flag)
             else if(mon>1000)
             {
                 cout<<"Returned money :"<<mon-1000<<" tk"<<endl;
+                mon=1000;
                 cout<<"Thank You for your kind Cooperation"<<endl;
                 break;
             }
@@ -1152,6 +1187,10 @@ void doctor:: searchD_ID(int d,int flag)
             delete arr[a]->patientPointer[b];
             return;
         }
+        if(q>arr[a]->p)
+        {
+            q--;
+        }
         v=arr[a]->patientPointer[b]->patientID;
         arr[a]->keeper[q-1][z]=v;
         strcpy(arr[a]->patientPointer[b]->dayName,week[dayCount-1]);
@@ -1170,6 +1209,7 @@ void doctor:: searchD_ID(int d,int flag)
             else if(mon>2000)
             {
                 cout<<"Returned money :"<<mon-2000<<" tk"<<endl;
+                mon=2000;
                 cout<<"Thank You for your kind Cooperation"<<endl;
                 break;
             }

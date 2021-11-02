@@ -167,9 +167,10 @@ private:
     char a_name[len],a_address[len],username[len],password[len];
 
 public:
-    admin(){};
-    ~admin(){};
+    admin() {};
+    ~admin() {};
     int ad=0;
+    int totalAmoney=0;
     void setAdata()
     {
         strncpy(a_name, "190041205 & 190041203", len);
@@ -249,6 +250,7 @@ public:
     ~patient() {};
     int pWard=0,pBed=0;
     int totalPayment=0;
+    static void setPcount(int);
     char dayName[len],timeslotName[len],currDoc[len];
     int d,t,patientID,DocterID;
     virtual patient_type get_Ptype();
@@ -303,6 +305,10 @@ public:
     }
 };
 int patient::pn;
+void patient::setPcount(int a)
+{
+    patient::pn=a;
+}
 class indoorPatient: public patient
 {
 protected:
@@ -318,6 +324,7 @@ public:
     void showPdetails()
     {
         patient::showPdetails();
+        cout<<"Admitted to:-"<<endl;
         cout<<"Ward no: "<<pWard<<"  & Bed:"<<pBed<<endl;
     }
 
